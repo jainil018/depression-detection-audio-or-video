@@ -1,9 +1,8 @@
-Flask==2.2.5
+gradio
 pandas
 whisper
 scikit-learn
-ffmpeg-python
 joblib
+ffmpeg-python
 openai-whisper
 torch
-openpyxl 
