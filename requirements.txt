@@ -6,3 +6,4 @@ ffmpeg-python
 joblib
 openai-whisper
 torch
+openpyxl 
