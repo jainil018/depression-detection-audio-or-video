@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Depression Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        #uploadForm {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 50%;
+            margin: auto;
+        }
+        input[type="file"] {
+            margin: 10px 0;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .loading {
+            color: blue;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Depression Detection from Video/Audio</h1>
+
+    <div id="uploadForm">
+        <input type="file" id="fileInput" accept="video/*, audio/*">
+        <button onclick="uploadFile()">Upload & Analyze</button>
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+        function uploadFile() {
+            let fileInput = document.getElementById("fileInput");
+            let resultDiv = document.getElementById("result");
+
+            if (fileInput.files.length === 0) {
+                alert("Please select a video or audio file.");
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            resultDiv.innerHTML = "<p class='loading'>Analyzing... Please wait.</p>";
+
+            fetch("/upload", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultDiv.innerHTML = "<p style='color: red;'>" + data.error + "</p>";
+                } else {
+                    let resultColor = data.result.includes("Depression") ? "red" : "green";
+                    resultDiv.innerHTML = `
+                        <p style="color: ${resultColor};">${data.result}</p>
+                        <p>${data.explanation}</p>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                resultDiv.innerHTML = "<p style='color: red;'>An error occurred. Try again.</p>";
+            });
+        }
+    </script>
+
+</body>
+</html>
